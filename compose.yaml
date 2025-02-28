@@ -1,0 +1,6 @@
+﻿services:
+  userservice.presentation:
+    image: userservice.presentation
+    build:
+      context: .
+      dockerfile: UserService.Presentation/Dockerfile
