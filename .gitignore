@@ -400,3 +400,5 @@ FodyWeavers.xsd
 *.sln.iml
 .idea/
 UserService.sln.DotSettings.user
+local.settings.json
+AzureFunctions/local.settings.json
