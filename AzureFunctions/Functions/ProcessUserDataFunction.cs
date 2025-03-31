@@ -10,8 +10,8 @@ namespace AzureFunctions.Functions;
 public class ProcessUserDataFunction(IServiceBusSenderService serviceBusSenderService)
 {
     [Function("ProcessUserDataFunction")]
-    public async Task<HttpResponseData> Run(
-        [HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req,
+    public async Task Run(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req,
         FunctionContext context)
     {
         var logger = context.GetLogger("ProcessUserDataFunction");
@@ -20,18 +20,16 @@ public class ProcessUserDataFunction(IServiceBusSenderService serviceBusSenderSe
         // Read and parse the request body
         string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
         var userData = JsonConvert.DeserializeObject<UserData>(requestBody);
-
-        if (string.IsNullOrEmpty(userData?.Email))
+        
+        try
         {
-            var badRequestResponse = req.CreateResponse(System.Net.HttpStatusCode.BadRequest);
-            badRequestResponse.WriteString("Email is required.");
-            return badRequestResponse;
+            // Send user data to Azure Service Bus
+            if (userData != null) await serviceBusSenderService.SendToServiceBus(userData, logger);
+            logger.LogInformation("User data successfully sent to Azure Service Bus.");
         }
-
-        // Send user data to Azure Service Bus
-        await serviceBusSenderService.SendToServiceBus(userData, logger);
-
-        var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
-        return response;
+        catch (Exception ex)
+        {
+            logger.LogError($"Error sending data to Service Bus: {ex.Message}");
+        }
     }
 }

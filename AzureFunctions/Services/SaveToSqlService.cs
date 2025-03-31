@@ -12,12 +12,14 @@ public class SaveToSqlService(ApplicationDbContext dbContext)
         var user = new User
         {
             Email = userData.Email,
-            Name = userData.Name
+            Name = userData.Name,
+            Role = userData.Role,
+            IsEmailConfirmed = true
         };
         
         dbContext.Users.Add(user);
         await dbContext.SaveChangesAsync();
 
-        logger.LogInformation($"Saved user data to SQL Database: {userData.Email}");
+        logger.LogInformation($"Saved user data to SQL Database: {userData.Name}");
     }
 }
