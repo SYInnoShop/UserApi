@@ -11,6 +11,7 @@ var builder = FunctionsApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IServiceBusSenderService, ServiceBusSenderService>();
 builder.Services.AddSingleton<SaveToSqlService>();
+builder.Services.AddSingleton<ValidateTokenService>();
 
 builder.ConfigureFunctionsWebApplication();
 
@@ -19,7 +20,7 @@ builder.Services.AddAzureClients(clientBuilder =>
     clientBuilder.AddServiceBusClient(Environment.GetEnvironmentVariable("ServiceBusConnectionString"));
 });
 
-string connectionString = Environment.GetEnvironmentVariable("AzureDbConnection");
+string? connectionString = Environment.GetEnvironmentVariable("AzureDbConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
